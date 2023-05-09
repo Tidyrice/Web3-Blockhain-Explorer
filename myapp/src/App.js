@@ -42,18 +42,30 @@ export default function App() {
 
   //contract variables (zoombies)
   let zoombiesContract;
+  const [zoombiesTotalSupply, setZoombiesTotalSupply] = useState(null);
+  const [boosterCredits, setBoosterCredits] = useState(null);
+  async function UpdateZoombiesTotalSupply() {
+    setZoombiesTotalSupply(await zoombiesContract.totalSupply());
+  }
+  async function UpdateBoosterCredits(zoombiesContractAddress) {
+    setBoosterCredits(await zoombiesContract.boosterCreditsOwned(zoombiesContractAddress));
+  }
 
   //update contracts
-  if (chainId == 1284 || chainId == 1285 || chainId == 1287) {
-    const zoomWethInterface = new utils.Interface(zoomArtifactJson.abi);
-    const zoomWethContractAddress = zoomArtifactJson.networks[chainId].address;
-    zoomContract = new Contract(zoomWethContractAddress, zoomWethInterface, library);
-    UpdateZoomTotalSupply();
+  useEffect (() => {
+    if (chainId == 1284 || chainId == 1285 || chainId == 1287) {
+      const zoomWethInterface = new utils.Interface(zoomArtifactJson.abi);
+      const zoomContractAddress = zoomArtifactJson.networks[chainId].address;
+      zoomContract = new Contract(zoomContractAddress, zoomWethInterface, library);
+      UpdateZoomTotalSupply();
 
-    const zoombiesWethInterface = new utils.Interface(zoombiesArtifactJson.abi);
-    const zoombiesWethContractAddress = zoombiesArtifactJson.networks[chainId].address;
-    zoombiesContract = new Contract(zoombiesWethContractAddress, zoombiesWethInterface, library);
-  }
+      const zoombiesWethInterface = new utils.Interface(zoombiesArtifactJson.abi);
+      const zoombiesContractAddress = zoombiesArtifactJson.networks[chainId].address;
+      zoombiesContract = new Contract(zoombiesContractAddress, zoombiesWethInterface, library);
+      UpdateZoombiesTotalSupply();
+      UpdateBoosterCredits(zoombiesContractAddress);
+    }
+  }, [chainId]);
 
   return (
     <div>
@@ -62,6 +74,7 @@ export default function App() {
       
       {account && etherBalance && (
         <div>
+
           <h1>CONNECTED - {chainName(chainId)}</h1>
 
           <br />
@@ -85,28 +98,27 @@ export default function App() {
           <p>{blockNumber}</p>
 
           <br />
+
         </div>
       )}
 
-      {zoomContract && (
+      {zoomTotalSupply && (
         <div>
+
           <b>Zoom token contract (total supply):</b>
-          <p>{formatEther(zoomTotalSupply)}</p>
+          <p>{zoomTotalSupply ? formatEther(zoomTotalSupply) : ""}</p>
 
           <br />
 
           <b>Zoombies token contract (total supply):</b>
-          <p>{}</p>
+          <p>{zoombiesTotalSupply ? formatEther(zoombiesTotalSupply) : ""}</p>
 
           <br />
 
           <b>Zoombies token contract (credits owned):</b>
-          <p>{}</p>
+          <p>{boosterCredits ? formatEther(boosterCredits) : ""}</p>
 
           <br />
-
-          <b>Last card minted:</b>
-          <img src="https://zoombies.world/nft-image/295508" width="10%"/>
 
         </div>
       )}
@@ -114,3 +126,6 @@ export default function App() {
     </div>
   )
 }
+
+// <b>Last card minted:</b>
+// <img src="https://zoombies.world/nft-image/295508" width="10%"/>
