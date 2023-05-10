@@ -24,7 +24,8 @@ export default function Contracts() {
     //contract variables (zoombies)
     const [zoombiesTotalSupply, setZoombiesTotalSupply] = useState(null);
     const [boosterCredits, setBoosterCredits] = useState(null);
-    const tokenId = {value: ""}; //tokenId is passed by reference to SubscribeZoombiesCardMinted
+    const [tokenId, setTokenId] = useState(null); //setTokenId is passed by reference to SubscribeZoombiesCardMinted
+
 
     async function UpdateZoombiesTotalSupply(zoombiesContract) {
         setZoombiesTotalSupply(await zoombiesContract.totalSupply());
@@ -60,7 +61,7 @@ export default function Contracts() {
             UpdateZoombiesTotalSupply(zoombiesContract);
             UpdateBoosterCredits(zoombiesContract, zoombiesContractAddress);
             SubscribeZoombiesTransfer(zoombiesContract); //TRANSFER ZOOMBIES
-            SubscribeZoombiesCardMinted(zoombiesContract, tokenId); //MINT ZOOMBIES
+            SubscribeZoombiesCardMinted(zoombiesContract, setTokenId); //MINT ZOOMBIES
             SubscribeDailyReward(zoombiesContract); //DAILY REWARD
             SubscribePackOpened(zoombiesContract); //PACK OPENED
 
@@ -102,7 +103,8 @@ export default function Contracts() {
         
                 <br />
 
-                <img src={`https://zoombies.world/nft-image/moonbeam/${tokenId.value}`} alt="" width="10%" />
+                <b>Last card minted:</b>
+                <img src={`https://zoombies.world/nft-image/moonbeam/${tokenId}`} alt="" width="10%" />
 
                 <br />
         

@@ -10,10 +10,10 @@ export function SubscribeZoombiesTransfer(zoombiesContract) {
     });
 }
 
-export function SubscribeZoombiesCardMinted(zoombiesContract, tokenIdParam) {
+export function SubscribeZoombiesCardMinted(zoombiesContract, setTokenId) {
     zoombiesContract.on("LogCardMinted", (owner, tokenId, cardTypeId, editionNumber) => {
         console.log("CardMinted event: ", owner, tokenId, cardTypeId, editionNumber);
-        tokenIdParam.value = tokenId;
+        setTokenId(parseInt(tokenId));
     });
 }
 
