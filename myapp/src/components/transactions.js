@@ -1,16 +1,12 @@
-import { useEffect, useState } from 'react'
-import { ethers, utils } from 'ethers';
+import { useState } from 'react'
 import { useEthers } from '@usedapp/core'
-import { Contract } from '@ethersproject/contracts';
 import { Button, Alert, Snackbar } from '@mui/material';
 
-import zoombiesArtifactJson from '../resources/Zoombies.json';
 import { MintBoosterNFT, BuyBoosterCredits, BuyAndMintBoosterNFT } from './scripts/mintAndBuy';
 
-export default function Transactions() {
+export default function Transactions({zoombiesContract}) {
     
-    const { account, chainId } = useEthers();
-    const [zoombiesContract, setZoombiesContract] = useState(null);
+    const { account } = useEthers();
 
     //error handling and messages
     const [errMessage, setErrMessage] = useState("");
@@ -22,23 +18,6 @@ export default function Transactions() {
         setErrMessage(message);
         setOpen(true);
     }
-
-
-    //update contracts
-    useEffect (() => {
-        if (chainId === 1284 || chainId === 1285 || chainId === 1287) {
-
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner(account);
-
-
-            //zoombies
-            const zoombiesWethInterface = new utils.Interface(zoombiesArtifactJson.abi);
-            const zoombiesContractAddress = zoombiesArtifactJson.networks[chainId].address;
-            setZoombiesContract(new Contract(zoombiesContractAddress, zoombiesWethInterface, signer));
-
-        }
-    }, [chainId, account]);
 
 
     return (

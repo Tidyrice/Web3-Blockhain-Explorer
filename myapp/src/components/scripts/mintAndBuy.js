@@ -4,7 +4,7 @@ export async function MintBoosterNFT(zoombiesContract, DisplayError) {
             DisplayError("Transaction cancelled");
         }
         else if (error.code === -32603) { //insufficient GLMR
-            DisplayError("Insufficient GLMR");
+            DisplayError("Insufficient GLMR or Booster Credits");
         }
         else {
             DisplayError(error.message);
@@ -26,7 +26,8 @@ export async function BuyBoosterCredits(zoombiesContract, DisplayError) {
     });
 }
 
-export async function BuyAndMintBoosterNFT(zoombiesContract, DisplayError) {
+export async function BuyAndMintBoosterNFT(zoombiesContract, DisplayError) { //INOPERABLE
+    console.log(zoombiesContract);
     zoombiesContract.buyBoosterAndMintNFT().catch((error) => {
         if (error.code === "ACTION_REJECTED") {
             DisplayError("Transaction cancelled");

@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react'
-import { ethers, utils } from 'ethers';
 import { useEthers } from '@usedapp/core'
-import { Contract } from '@ethersproject/contracts';
 import { formatEther } from '@ethersproject/units'
 
-import zoomArtifactJson from '../resources/ZoomToken.json';
-import zoombiesArtifactJson from '../resources/Zoombies.json';
 import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCardMinted, SubscribeDailyReward, SubscribePackOpened } from './scripts/listeners.js';
 
-export default function Contracts() {
+export default function Contracts({zoomContract, zoombiesContract}) {
 
     const { account, chainId } = useEthers();
 
@@ -38,26 +34,14 @@ export default function Contracts() {
 
     //update contracts
     useEffect (() => {
-        if (chainId === 1284 || chainId === 1285 || chainId === 1287) {
-
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner(account);
-
+        if ((chainId === 1284 || chainId === 1285 || chainId === 1287) && zoomContract && zoombiesContract) {
 
             //zoom
-            const zoomWethInterface = new utils.Interface(zoomArtifactJson.abi);
-            const zoomContractAddress = zoomArtifactJson.networks[chainId].address;
-            const zoomContract = new Contract(zoomContractAddress, zoomWethInterface, provider);
-
             UpdateZoomTotalSupply(zoomContract);
             SubscribeZoomTransfer(zoomContract); //TRANSFER ZOOM
 
     
             //zoombies
-            const zoombiesWethInterface = new utils.Interface(zoombiesArtifactJson.abi);
-            const zoombiesContractAddress = zoombiesArtifactJson.networks[chainId].address;
-            const zoombiesContract = new Contract(zoombiesContractAddress, zoombiesWethInterface, signer);
-
             UpdateZoombiesTotalSupply(zoombiesContract);
             UpdateBoosterCredits(zoombiesContract, account);
             SubscribeZoombiesTransfer(zoombiesContract); //TRANSFER ZOOMBIES
@@ -86,7 +70,7 @@ export default function Contracts() {
             setZoombiesTotalSupply(null);
             setBoosterCredits(null);
         }
-    }, [chainId, account]);
+    }, [chainId, account, zoomContract, zoombiesContract]);
 
     
     return (
