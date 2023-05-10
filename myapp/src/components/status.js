@@ -5,7 +5,7 @@ import { Button } from '@mui/material';
 export default function Status() {
 
     //connect to wallet and blockchain details
-    const { account, deactivate, activateBrowserWallet, chainId, library } = useEthers();
+    const { account, activateBrowserWallet, chainId } = useEthers();
     const etherBalance = useEtherBalance(account);
     const blockNumber = useBlockNumber();
 
@@ -31,7 +31,7 @@ export default function Status() {
 
                 <br />
 
-                <b>Balance (ETH):</b>
+                <b>Balance (GLMR):</b>
                 <p>{formatEther(etherBalance)}</p>
 
                 <br />

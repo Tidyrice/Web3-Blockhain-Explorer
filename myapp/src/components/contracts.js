@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { formatEther } from '@ethersproject/units'
 import { ethers, utils } from 'ethers';
-import { Contract } from '@ethersproject/contracts';
 import { useEthers } from '@usedapp/core'
+import { Contract } from '@ethersproject/contracts';
+import { formatEther } from '@ethersproject/units'
 
 import zoomArtifactJson from '../resources/ZoomToken.json';
 import zoombiesArtifactJson from '../resources/Zoombies.json';
-import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCardMinted, SubscribeDailyReward, SubscribePackOpened } from './listeners.js';
+import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCardMinted, SubscribeDailyReward, SubscribePackOpened } from './scripts/listeners.js';
 
 export default function Contracts() {
 
@@ -31,8 +31,8 @@ export default function Contracts() {
         setZoombiesTotalSupply(await zoombiesContract.totalSupply());
     }
 
-    async function UpdateBoosterCredits(zoombiesContract, zoombiesContractAddress) {
-        setBoosterCredits(await zoombiesContract.boosterCreditsOwned(zoombiesContractAddress));
+    async function UpdateBoosterCredits(zoombiesContract, accountAddress) {
+        setBoosterCredits(await zoombiesContract.boosterCreditsOwned(accountAddress));
     }
 
 
@@ -59,17 +59,24 @@ export default function Contracts() {
             const zoombiesContract = new Contract(zoombiesContractAddress, zoombiesWethInterface, signer);
 
             UpdateZoombiesTotalSupply(zoombiesContract);
-            UpdateBoosterCredits(zoombiesContract, zoombiesContractAddress);
+            UpdateBoosterCredits(zoombiesContract, account);
             SubscribeZoombiesTransfer(zoombiesContract); //TRANSFER ZOOMBIES
             SubscribeZoombiesCardMinted(zoombiesContract, setTokenId); //MINT ZOOMBIES
             SubscribeDailyReward(zoombiesContract); //DAILY REWARD
             SubscribePackOpened(zoombiesContract); //PACK OPENED
 
 
-            //clean up active listeners
+            //clean up
             return () => {
+                //remove active listeners
                 zoomContract.removeAllListeners();
                 zoombiesContract.removeAllListeners();
+                
+                //reset variables
+                setZoomTotalSupply(null);
+                setZoombiesTotalSupply(null);
+                setBoosterCredits(null);
+                setTokenId(null);
             }
 
         }
@@ -88,25 +95,28 @@ export default function Contracts() {
             {account && zoomTotalSupply && (
                 <div>
         
-                <b>Zoom token contract (total supply):</b>
-                <p>{zoomTotalSupply ? formatEther(zoomTotalSupply) : ""}</p>
-        
-                <br />
-        
-                <b>Zoombies token contract (total supply):</b>
-                <p>{zoombiesTotalSupply ? formatEther(zoombiesTotalSupply) : ""}</p>
-        
-                <br />
-        
-                <b>Zoombies token contract (credits owned):</b>
-                <p>{boosterCredits ? formatEther(boosterCredits) : ""}</p>
-        
-                <br />
+                    <b>Zoom token contract (total supply):</b>
+                    <p>{zoomTotalSupply ? formatEther(zoomTotalSupply) : ""}</p>
+            
+                    <br />
+            
+                    <b>Zoombies token contract (total supply):</b>
+                    <p>{zoombiesTotalSupply ? parseInt(zoombiesTotalSupply) : ""}</p>
+            
+                    <br />
+            
+                    <b>Booster credits owned:</b>
+                    <p>{boosterCredits ? parseInt(boosterCredits) : ""}</p>
+            
+                    <br />
 
-                <b>Last card minted:</b>
-                <img src={`https://zoombies.world/nft-image/moonbeam/${tokenId}`} alt="" width="10%" />
+                    <b>Last card minted:</b>
+                    <br />
+                    <div style={{width: "190.3px", height: "306.933px"}}> {/*Image placeholder*/}
+                        <img src={`https://zoombies.world/nft-image/moonbeam/${tokenId}`} alt="" width= "190.3px" height= "306.933px" />
+                    </div>
 
-                <br />
+                    <br />
         
                 </div>
             )}
