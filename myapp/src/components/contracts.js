@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { formatEther } from '@ethersproject/units'
-import { utils } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import { useEthers } from '@usedapp/core'
 
@@ -10,7 +10,7 @@ import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCard
 
 export default function Contracts() {
 
-    const { account, chainId, library } = useEthers();
+    const { account, chainId } = useEthers();
 
 
     //contract variables (zoom)
@@ -24,6 +24,7 @@ export default function Contracts() {
     //contract variables (zoombies)
     const [zoombiesTotalSupply, setZoombiesTotalSupply] = useState(null);
     const [boosterCredits, setBoosterCredits] = useState(null);
+    const tokenId = {value: ""}; //tokenId is passed by reference to SubscribeZoombiesCardMinted
 
     async function UpdateZoombiesTotalSupply(zoombiesContract) {
         setZoombiesTotalSupply(await zoombiesContract.totalSupply());
@@ -38,10 +39,14 @@ export default function Contracts() {
     useEffect (() => {
         if (chainId === 1284 || chainId === 1285 || chainId === 1287) {
 
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner(account);
+
+
             //zoom
             const zoomWethInterface = new utils.Interface(zoomArtifactJson.abi);
             const zoomContractAddress = zoomArtifactJson.networks[chainId].address;
-            const zoomContract = new Contract(zoomContractAddress, zoomWethInterface, library);
+            const zoomContract = new Contract(zoomContractAddress, zoomWethInterface, provider);
 
             UpdateZoomTotalSupply(zoomContract);
             SubscribeZoomTransfer(zoomContract); //TRANSFER ZOOM
@@ -50,12 +55,12 @@ export default function Contracts() {
             //zoombies
             const zoombiesWethInterface = new utils.Interface(zoombiesArtifactJson.abi);
             const zoombiesContractAddress = zoombiesArtifactJson.networks[chainId].address;
-            const zoombiesContract = new Contract(zoombiesContractAddress, zoombiesWethInterface, library);
+            const zoombiesContract = new Contract(zoombiesContractAddress, zoombiesWethInterface, signer);
 
             UpdateZoombiesTotalSupply(zoombiesContract);
             UpdateBoosterCredits(zoombiesContract, zoombiesContractAddress);
             SubscribeZoombiesTransfer(zoombiesContract); //TRANSFER ZOOMBIES
-            SubscribeZoombiesCardMinted(zoombiesContract); //MINT ZOOMBIES
+            SubscribeZoombiesCardMinted(zoombiesContract, tokenId); //MINT ZOOMBIES
             SubscribeDailyReward(zoombiesContract); //DAILY REWARD
             SubscribePackOpened(zoombiesContract); //PACK OPENED
 
@@ -67,7 +72,13 @@ export default function Contracts() {
             }
 
         }
-    }, [chainId, library]);
+
+        else { //ex. connected to Ethereum Mainnet
+            setZoomTotalSupply(null);
+            setZoombiesTotalSupply(null);
+            setBoosterCredits(null);
+        }
+    }, [chainId, account]);
 
     
     return (
@@ -89,6 +100,10 @@ export default function Contracts() {
                 <b>Zoombies token contract (credits owned):</b>
                 <p>{boosterCredits ? formatEther(boosterCredits) : ""}</p>
         
+                <br />
+
+                <img src={`https://zoombies.world/nft-image/moonbeam/${tokenId.value}`} alt="" width="10%" />
+
                 <br />
         
                 </div>
