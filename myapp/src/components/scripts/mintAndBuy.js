@@ -1,5 +1,12 @@
-export async function MintBoosterNFT(zoombiesContract, DisplayError) {
-    zoombiesContract.mintBoosterNFT(0).catch((error) => {
+import { parseEther } from "ethers/lib/utils";
+
+export async function MintBoosterNFT(zoombiesContract, DisplayError, DisplaySuccess) {
+    zoombiesContract.mintBoosterNFT(0)
+    .then((result) => {
+        console.log("Minted Booster NFT: ", result);
+        DisplaySuccess();
+    })
+    .catch((error) => {
         if (error.code === "ACTION_REJECTED") {
             DisplayError("Transaction cancelled");
         }
@@ -12,8 +19,13 @@ export async function MintBoosterNFT(zoombiesContract, DisplayError) {
     });
 }
 
-export async function BuyBoosterCredits(zoombiesContract, amount,DisplayError) {
-    zoombiesContract.buyBoosterCredits(amount, {value: amount*(10**18).toString()}).catch((error) => { //convert ether to wei
+export async function BuyBoosterCredits(zoombiesContract, amount, DisplayError, DisplaySuccess) {
+    zoombiesContract.buyBoosterCredits(amount, {value: parseEther(amount.toString())})
+    .then((result) => {
+        console.log("Bought Booster Credits: ", result);
+        DisplaySuccess();
+    })
+    .catch((error) => { //convert ether to wei
         if (error.code === "ACTION_REJECTED") {
             DisplayError("Transaction cancelled");
         }
@@ -26,8 +38,12 @@ export async function BuyBoosterCredits(zoombiesContract, amount,DisplayError) {
     });
 }
 
-export async function BuyAndMintBoosterNFT(zoombiesContract, DisplayError) { //INOPERABLE
-    zoombiesContract.buyBoosterAndMintNFT({value: 1*(10**18).toString()}).catch((error) => {
+export async function BuyAndMintBoosterNFT(zoombiesContract, DisplayError, DisplaySuccess) { //INOPERABLE
+    zoombiesContract.buyBoosterAndMintNFT({value: parseEther("1")}).then((result) => {
+        console.log("Bought Booster and Minted NFT: ", result);
+        DisplaySuccess();
+    })
+    .catch((error) => {
         if (error.code === "ACTION_REJECTED") {
             DisplayError("Transaction cancelled");
         }

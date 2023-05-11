@@ -32,6 +32,9 @@ export default function App() {
           }
         });
 
+        //reload page on account change
+        window.ethereum.on("accountsChanged", (accounts) => {window.location.reload()});
+
         //zoom
         const zoomWethInterface = new utils.Interface(zoomArtifactJson.abi);
         const zoomContractAddress = zoomArtifactJson.networks[chainId].address;

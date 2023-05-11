@@ -21,7 +21,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
     //contract variables (zoombies)
     const [zoombiesTotalSupply, setZoombiesTotalSupply] = useState(null);
     const [boosterCredits, setBoosterCredits] = useState(null);
-    const [tokenId, setTokenId] = useState([]); //setTokenId is passed by reference to SubscribeZoombiesCardMinted
+    const [tokenId, setTokenId] = useState([]); //SubscribeZoombiesCardMinted will push to tokenId array
 
 
     async function UpdateZoombiesTotalSupply(zoombiesContract) {
@@ -46,7 +46,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
             UpdateZoombiesTotalSupply(zoombiesContract);
             UpdateBoosterCredits(zoombiesContract, account);
             SubscribeZoombiesTransfer(zoombiesContract); //TRANSFER ZOOMBIES
-            SubscribeZoombiesCardMinted(zoombiesContract, tokenId, setTokenId); //NEW CARD MINTED (pushes ID to tokenId array)
+            SubscribeZoombiesCardMinted(zoombiesContract, tokenId); //NEW CARD MINTED (pushes ID to tokenId array)
             SubscribeDailyReward(zoombiesContract); //DAILY REWARD
             SubscribePackOpened(zoombiesContract); //PACK OPENED
 
