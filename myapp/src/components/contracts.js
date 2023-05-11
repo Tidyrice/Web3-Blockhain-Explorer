@@ -1,8 +1,9 @@
+import LastCardsMinted from './LastCardsMinted.js';
+import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCardMinted, SubscribeDailyReward, SubscribePackOpened } from './scripts/listeners.js';
+
 import { useEffect, useState } from 'react'
 import { useEthers } from '@usedapp/core'
 import { formatEther } from '@ethersproject/units'
-
-import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCardMinted, SubscribeDailyReward, SubscribePackOpened } from './scripts/listeners.js';
 
 export default function Contracts({zoomContract, zoombiesContract}) {
 
@@ -20,7 +21,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
     //contract variables (zoombies)
     const [zoombiesTotalSupply, setZoombiesTotalSupply] = useState(null);
     const [boosterCredits, setBoosterCredits] = useState(null);
-    const [tokenId, setTokenId] = useState(null); //setTokenId is passed by reference to SubscribeZoombiesCardMinted
+    const [tokenId, setTokenId] = useState([]); //setTokenId is passed by reference to SubscribeZoombiesCardMinted
 
 
     async function UpdateZoombiesTotalSupply(zoombiesContract) {
@@ -34,7 +35,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
 
     //update contracts
     useEffect (() => {
-        if (zoomContract && zoombiesContract && (chainId === 1284 || chainId === 1285 || chainId === 1287)) {
+        if (account && zoomContract && zoombiesContract && (chainId === 1284 || chainId === 1285 || chainId === 1287)) {
 
             //zoom
             UpdateZoomTotalSupply(zoomContract);
@@ -45,7 +46,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
             UpdateZoombiesTotalSupply(zoombiesContract);
             UpdateBoosterCredits(zoombiesContract, account);
             SubscribeZoombiesTransfer(zoombiesContract); //TRANSFER ZOOMBIES
-            SubscribeZoombiesCardMinted(zoombiesContract, setTokenId); //MINT ZOOMBIES
+            SubscribeZoombiesCardMinted(zoombiesContract, tokenId, setTokenId); //NEW CARD MINTED (pushes ID to tokenId array)
             SubscribeDailyReward(zoombiesContract); //DAILY REWARD
             SubscribePackOpened(zoombiesContract); //PACK OPENED
 
@@ -60,7 +61,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
                 setZoomTotalSupply(null);
                 setZoombiesTotalSupply(null);
                 setBoosterCredits(null);
-                setTokenId(null);
+                setTokenId([]);
             }
 
         }
@@ -70,7 +71,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
             setZoombiesTotalSupply(null);
             setBoosterCredits(null);
         }
-    }, [chainId, account, zoomContract, zoombiesContract]);
+    }, [chainId, account, zoomContract, zoombiesContract, tokenId]);
 
     
     return (
@@ -94,16 +95,16 @@ export default function Contracts({zoomContract, zoombiesContract}) {
             
                     <br />
 
-                    <b>Last card minted:</b>
+                    {/*<b>Last card minted:</b>
                     <br />
-                    <div style={{width: "190.3px", height: "306.933px"}}> {/*Image placeholder*/}
+                    <div style={{width: "190.3px", height: "306.933px"}}>
                         <img src={`https://zoombies.world/nft-image/moonbeam/${tokenId}`} alt="" width= "190.3px" height= "306.933px" />
-                    </div>
-
-                    <br />
+                    </div> */}
         
                 </div>
             )}
+            
+            {LastCardsMinted(zoombiesContract, tokenId)}
             
         </div>
     )

@@ -2,7 +2,6 @@
 import Status from './components/Status.js';
 import Contracts from './components/Contracts.js';
 import Transactions from './components/Transactions.js';
-import NftImageList from './components/NftImageList.js';
 
 //dependencies
 import { useEffect, useState } from 'react'
@@ -21,7 +20,7 @@ export default function App() {
 
   //update contract variables
   useEffect (() => {
-    if (account && chainId && (chainId === 1284 || chainId === 1285 || chainId === 1287)) {
+    if (account && (chainId === 1284 || chainId === 1285 || chainId === 1287)) {
 
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         const signer = provider.getSigner(account);
@@ -55,8 +54,6 @@ export default function App() {
       {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
 
       {Transactions({zoombiesContract: zoombiesContract})}
-
-      {NftImageList({zoombiesContract: zoombiesContract})}
 
     </div>
 

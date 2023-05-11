@@ -12,8 +12,8 @@ export async function MintBoosterNFT(zoombiesContract, DisplayError) {
     });
 }
 
-export async function BuyBoosterCredits(zoombiesContract, DisplayError) {
-    zoombiesContract.buyBoosterCredits(1, {value:"1000000000000000000"}).catch((error) => {
+export async function BuyBoosterCredits(zoombiesContract, amount,DisplayError) {
+    zoombiesContract.buyBoosterCredits(amount, {value: amount*(10**18).toString()}).catch((error) => { //convert ether to wei
         if (error.code === "ACTION_REJECTED") {
             DisplayError("Transaction cancelled");
         }
@@ -27,8 +27,7 @@ export async function BuyBoosterCredits(zoombiesContract, DisplayError) {
 }
 
 export async function BuyAndMintBoosterNFT(zoombiesContract, DisplayError) { //INOPERABLE
-    console.log(zoombiesContract);
-    zoombiesContract.buyBoosterAndMintNFT().catch((error) => {
+    zoombiesContract.buyBoosterAndMintNFT({value: 1*(10**18).toString()}).catch((error) => {
         if (error.code === "ACTION_REJECTED") {
             DisplayError("Transaction cancelled");
         }
