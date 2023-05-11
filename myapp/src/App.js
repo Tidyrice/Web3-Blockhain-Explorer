@@ -21,7 +21,7 @@ export default function App() {
 
   //update contract variables
   useEffect (() => {
-    if (chainId === 1284 || chainId === 1285 || chainId === 1287) {
+    if (account && chainId && (chainId === 1284 || chainId === 1285 || chainId === 1287)) {
 
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         const signer = provider.getSigner(account);

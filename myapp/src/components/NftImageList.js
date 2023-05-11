@@ -18,7 +18,7 @@ function Item() { //each item in the flexbox (card + buttons)
     )
 }
 
-export default function NftImageList(zoombiesContract) {
+export default function NftImageList({zoombiesContract}) {
 
     return (
         <div>

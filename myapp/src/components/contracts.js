@@ -34,7 +34,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
 
     //update contracts
     useEffect (() => {
-        if ((chainId === 1284 || chainId === 1285 || chainId === 1287) && zoomContract && zoombiesContract) {
+        if (zoomContract && zoombiesContract && (chainId === 1284 || chainId === 1285 || chainId === 1287)) {
 
             //zoom
             UpdateZoomTotalSupply(zoomContract);
