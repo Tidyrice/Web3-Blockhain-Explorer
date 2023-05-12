@@ -13,7 +13,7 @@ export function SubscribeZoombiesTransfer(zoombiesContract) {
 export function SubscribeZoombiesCardMinted(zoombiesContract, tokenIdArr) {
     zoombiesContract.on("LogCardMinted", (owner, tokenId, cardTypeId, editionNumber) => {
         console.log("CardMinted event: ", owner, tokenId, cardTypeId, editionNumber);
-        tokenIdArr.shift(parseInt(tokenId));
+        tokenIdArr.unshift(parseInt(tokenId));
     });
 }
 

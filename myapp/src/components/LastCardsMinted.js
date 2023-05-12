@@ -49,7 +49,7 @@ function Item({zoombiesContract, token, tokenArr}) { //each item in the flexbox 
     async function Gift() { //gift the card to the address entered in the dialog
         handleGiftClose();
         const recipient = document.getElementById("giftAddress").value;
-        GiftCard(zoombiesContract, token, recipient, DisplayError, DisplaySuccess);
+        GiftCard(zoombiesContract, token, account, recipient, setUserOwnsCard, DisplayError, DisplaySuccess);
     }
 
 
@@ -98,7 +98,7 @@ function Item({zoombiesContract, token, tokenArr}) { //each item in the flexbox 
 
                     <Snackbar open={openSuccess} autoHideDuration={6000} onClose={HandleClose}>
                         <Alert severity="success">
-                            Transaction successful!
+                            Gifting successful!
                         </Alert>
                     </Snackbar>
 
@@ -107,7 +107,7 @@ function Item({zoombiesContract, token, tokenArr}) { //each item in the flexbox 
                         <DialogTitle>Gift Card</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                To gift this card, please enter the recipient's address below.
+                                To gift this card, please enter the recipient's address below (case sensitive).
                             </DialogContentText>
                             <TextField
                                 autoFocus
