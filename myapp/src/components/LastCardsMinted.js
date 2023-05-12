@@ -1,7 +1,7 @@
 import { GiftCard, SacrificeCard } from './scripts/giftAndSacrifice';
 
-import { useEffect, useState } from 'react'
-import { useEthers } from '@usedapp/core'
+import { useEffect, useState } from 'react';
+import { useEthers } from '@usedapp/core';
 import { Button, IconButton, Box, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';

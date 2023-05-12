@@ -1,5 +1,5 @@
-import {  useBlockNumber, useEtherBalance, useEthers } from '@usedapp/core'
-import { formatEther } from '@ethersproject/units'
+import {  useBlockNumber, useEtherBalance, useEthers } from '@usedapp/core';
+import { formatEther } from '@ethersproject/units';
 import { Button } from '@mui/material';
 
 export default function Status() {

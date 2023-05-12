@@ -1,7 +1,8 @@
 //components
 import Status from './components/Status.js';
-import Contracts from './components/Contracts.js';
+import Contracts from './components/Contracts.js'; //includes LastCardsMinted component
 import Transactions from './components/Transactions.js';
+import Animations from './components/Animations.js';
 
 //dependencies
 import { useEffect, useState } from 'react'
@@ -25,6 +26,9 @@ export default function App() {
 
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         const signer = provider.getSigner(account);
+
+        //animation
+        Animations();
 
         //reload page on network change
         provider.on("network", (newNetwork, oldNetwork) => { //https://docs.ethers.org/v5/concepts/best-practices/
@@ -65,8 +69,15 @@ export default function App() {
         {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
       </div>
 
+      {/*spine animation*/}
+      <Box id="spine-animation" sx={{flex: -1, margin: 5, width: 240, height: 320}}>
+
+      </Box>
+
       <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>
-        {Transactions({zoombiesContract: zoombiesContract})}
+        <div style={{flex: -1}}>
+          {Transactions({zoombiesContract: zoombiesContract})}
+        </div>
       </div>
 
     </Box>

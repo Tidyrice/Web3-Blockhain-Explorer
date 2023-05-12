@@ -1,9 +1,9 @@
 import LastCardsMinted from './LastCardsMinted.js';
 import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCardMinted, SubscribeDailyReward, SubscribePackOpened } from './scripts/listeners.js';
 
-import { useEffect, useState } from 'react'
-import { useEthers } from '@usedapp/core'
-import { formatEther } from '@ethersproject/units'
+import { useEffect, useState } from 'react';
+import { useEthers } from '@usedapp/core';
+import { formatEther } from '@ethersproject/units';
 
 export default function Contracts({zoomContract, zoombiesContract}) {
 
