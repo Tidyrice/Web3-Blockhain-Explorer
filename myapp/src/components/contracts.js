@@ -94,12 +94,6 @@ export default function Contracts({zoomContract, zoombiesContract}) {
                     <p>{boosterCredits ? parseInt(boosterCredits) : ""}</p>
             
                     <br />
-
-                    {/*<b>Last card minted:</b>
-                    <br />
-                    <div style={{width: "190.3px", height: "306.933px"}}>
-                        <img src={`https://zoombies.world/nft-image/moonbeam/${tokenId}`} alt="" width= "190.3px" height= "306.933px" />
-                    </div> */}
         
                 </div>
             )}

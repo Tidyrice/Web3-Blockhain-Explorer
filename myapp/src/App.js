@@ -10,6 +10,7 @@ import { useEthers } from '@usedapp/core'
 import { Contract } from '@ethersproject/contracts';
 import zoomArtifactJson from './resources/ZoomToken.json';
 import zoombiesArtifactJson from './resources/Zoombies.json';
+import Box from '@mui/material/Box/Box.js';
 
 export default function App() {
 
@@ -50,15 +51,25 @@ export default function App() {
 
   return (
 
-    <div>
+    <Box
+      sx={{
+        p: 2,
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+      }}
+    >
 
-      {Status()}
+      <div>
+        {Status()}
+        {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
+      </div>
 
-      {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
+      <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>
+        {Transactions({zoombiesContract: zoombiesContract})}
+      </div>
 
-      {Transactions({zoombiesContract: zoombiesContract})}
-
-    </div>
+    </Box>
 
   )
 }

@@ -43,11 +43,11 @@ export default function Transactions({zoombiesContract}) {
                 </Alert>
             </Snackbar>
 
-            {account && zoombiesContract && <Button variant="contained" onClick={() => MintBoosterNFT(zoombiesContract, DisplayError, DisplaySuccess)}>Mint Booster NFT</Button>}
+            {account && zoombiesContract && <Button sx={{m: 1}} variant="contained" onClick={() => MintBoosterNFT(zoombiesContract, DisplayError, DisplaySuccess)}>Mint Booster NFT</Button>}
 
-            {account && zoombiesContract && <Button variant="contained" onClick={() => BuyBoosterCredits(zoombiesContract, 1, DisplayError, DisplaySuccess)}>Buy Booster Credits (1)</Button>}
+            {account && zoombiesContract && <Button sx={{m: 1}} variant="contained" onClick={() => BuyBoosterCredits(zoombiesContract, 1, DisplayError, DisplaySuccess)}>Buy Booster Credits (1)</Button>}
 
-            {account && zoombiesContract && <Button variant="contained" onClick={() => BuyAndMintBoosterNFT(zoombiesContract, DisplayError, DisplaySuccess)}>Buy and Mint Booster NFT</Button>}
+            {account && zoombiesContract && <Button sx={{m: 1}} variant="contained" onClick={() => BuyAndMintBoosterNFT(zoombiesContract, DisplayError, DisplaySuccess)}>Buy and Mint Booster NFT</Button>}
 
         </div>
     )
