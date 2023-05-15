@@ -16,13 +16,14 @@ export default function Animations({zoombiesContract}) {
     //animations
     useEffect(() => {
         const animationContainer = document.getElementById("spine-animation");
-        if (animationContainer && !document.getElementsByClassName("spine-player")[0] /*prevents duplicates*/) {
+        if (animationContainer && document.getElementsByClassName("spine-player").length < 2 /*prevents duplicates*/) {
             new spine.SpinePlayer('spine-animation', {
                 jsonUrl: "https://zoombies.world/spine/space_walker_green.json",
                 atlasUrl: "https://zoombies.world/spine/Space_Walker_02.atlas",
-                animation: "idle", //animation on initial render
-                animations: ["idle", "idle2", "run", "fall_down"], //avaliable animations
-                showControls: false, //ERROR :: when set to true, animations show. when set to false, animations don't show :: ERROR
+                //animation: "idle", //animation on initial render
+                //animations: ["idle", "idle2", "run", "fall_down"], //avaliable animations
+                showControls: true, //ERROR :: when set to true, animations show. when set to false, animations don't show :: ERROR
+                showLoading: false,
                 alpha: true,
                 backgroundColor: "#00000000",
                 success: function (player) { //called after spinePlayer is successfully constructed
@@ -60,18 +61,20 @@ export default function Animations({zoombiesContract}) {
 //PRIVATE FUNCTIONS
 
 function startIdleAnimation(player) {
-    const anim = getRandomIdleAnimation();
-    player.animationState.setAnimation(0, anim, false);
-    setTimeout(() => {
-      startIdleAnimation(player);
-    }, 1000);
+    if (player) {
+        const anim = getRandomIdleAnimation();
+        player.animationState.setAnimation(0, anim, true); //loop this animation
+        /*setTimeout(() => {
+        startIdleAnimation(player);
+        }, 1000);*/
+    }
 };
 
 function cardMintedAnimationHandler(player) {
     if (player) {
         player.animationState.setAnimation(0, "run", false);
         setTimeout(() => {
-            //return to idling
+            startIdleAnimation(player);
         }, 1000);
     }
 }
@@ -80,7 +83,7 @@ function cardSacrificedAnimationHandler(player) {
     if (player) {
         player.animationState.setAnimation(0, "fall_down", false);
         setTimeout(() => {
-            //return to idling
+            startIdleAnimation(player);
         }, 1000);
     }
 }
@@ -89,7 +92,7 @@ function newBlockAnimationHandler(player) {
     if (player) {
         player.animationState.setAnimation(0, "jump", false);
         setTimeout(() => {
-            //return to idling
+            startIdleAnimation(player);
         }, 1000);
     }
 }

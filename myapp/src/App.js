@@ -58,7 +58,6 @@ export default function App() {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'nowrap',
-        //backgroundColor: "black"
       }}
     >
 
@@ -69,8 +68,8 @@ export default function App() {
 
       <div 
         id="spine-animation"
-        className="spine-animation"
-        style={{flex: -1, width: 240, height: 320}} 
+        className="spine-player"
+        style={{flex: -1, width: 360, height: 360}} 
       />
       {Animations({zoombiesContract: zoombiesContract})}
 
