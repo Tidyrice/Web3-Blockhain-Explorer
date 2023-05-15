@@ -72,7 +72,7 @@ export default function App() {
         className="spine-animation"
         style={{flex: -1, width: 240, height: 320}} 
       />
-      {Animations()}
+      {Animations({zoombiesContract: zoombiesContract})}
 
       <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>
         <div style={{flex: -1}}>

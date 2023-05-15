@@ -152,7 +152,9 @@ export default function LastCardsMinted(zoombiesContract, tokenId) {
     return (
         <div>
 
-            <b>Last cards minted:</b>
+            {account && (
+                <b>Last cards minted:</b>
+            )}
 
             {account && zoombiesContract && (tokenId.length !== 0) && (
                 <div>

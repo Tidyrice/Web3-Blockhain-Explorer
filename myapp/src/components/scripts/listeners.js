@@ -1,3 +1,4 @@
+//CONTRACTS MODULE
 export function SubscribeZoomTransfer(zoomContract) {
     zoomContract.on("Transfer", (from, to, amount) => {
         console.log("Transfer event: ", from, to, amount);
@@ -10,7 +11,7 @@ export function SubscribeZoombiesTransfer(zoombiesContract) {
     });
 }
 
-export function SubscribeZoombiesCardMinted(zoombiesContract, tokenIdArr) {
+export function SubscribeCardMintedArr(zoombiesContract, tokenIdArr) {
     zoombiesContract.on("LogCardMinted", (owner, tokenId, cardTypeId, editionNumber) => {
         console.log("CardMinted event: ", owner, tokenId, cardTypeId, editionNumber);
         tokenIdArr.unshift(parseInt(tokenId));
@@ -26,5 +27,21 @@ export function SubscribeDailyReward(zoombiesContract) {
 export function SubscribePackOpened(zoombiesContract) {
     zoombiesContract.on("LogPackOpened", (owner, rarity) => {
         console.log("PackOpened event: ", owner, rarity);
+    })
+}
+
+
+//ANIMATIONS MODULE
+export function SubscribeCardMintedAnim(zoombiesContract, player, anim) {
+    zoombiesContract.on("LogCardMinted", (owner, tokenId, cardTypeId, editionNumber) => {
+        console.log("CardMinted event (ANIMATION): ", owner, tokenId, cardTypeId, editionNumber);
+        anim(player);
+    });
+}
+
+export function SubscribeCardSacrificeAnim(zoombiesContract, player, anim) { //for use in the Animations module
+    zoombiesContract.on("LogSacrificeNFT", (owner, tokenId, cardTypeId, editionNumber) => {
+        console.log("CardSacrifice event (ANIMATION): ", owner, tokenId, cardTypeId, editionNumber);
+        anim(player);
     })
 }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import * as spine from "@esotericsoftware/spine-player";
 
-export default function Animations() {
+import { SubscribeCardMintedAnim, SubscribeCardSacrificeAnim } from "./scripts/listeners";
+
+export default function Animations({zoombiesContract}) {
 
     //functional components
     const [spinePlayer, setSpinePlayer] = useState(null);
@@ -19,6 +21,7 @@ export default function Animations() {
                 success: function (player) { //called after spinePlayer is successfully constructed
                     setSpinePlayer(player);
                     startRandomAnimation(player);
+                    player.play();
                     animationContainer.addEventListener("click", () => clickAnimationHandler(player)); //do something on click
                 },
                 error: function (reason) {
@@ -27,12 +30,41 @@ export default function Animations() {
             })
         }
 
-    }, [])
+        if (spinePlayer && zoombiesContract) { //listeners to update animations
+            SubscribeCardMintedAnim(zoombiesContract, spinePlayer, cardMintedAnimationHandler);
+            SubscribeCardSacrificeAnim(zoombiesContract, spinePlayer, cardSacrificedAnimationHandler);
+        }
+
+    }, [zoombiesContract, spinePlayer])
 
 }
 
 
 //PRIVATE FUNCTIONS
+
+function cardMintedAnimationHandler(player) {
+    if (player) {
+        player.animationState.setAnimation(0, "run", false);
+        setTimeout(() => {
+            //return to idling
+        }, 1000);
+    }
+}
+
+function cardSacrificedAnimationHandler(player) {
+    if (player) {
+        player.animationState.setAnimation(0, "fall_down", false);
+        setTimeout(() => {
+            //return to idling
+        }, 1000);
+    }
+}
+
+function clickAnimationHandler(player) {
+    if (player) {
+        console.log("clicked");
+    }
+}
 
 function getRandomAnimation() {
     const animations = ["idle", "idle2", "run", "jump", "fall_down"];
@@ -47,11 +79,4 @@ function startRandomAnimation(player) {
     setTimeout(() => {
       startRandomAnimation(player);
     }, 1000);
-  };
-
-function clickAnimationHandler(player) {
-    if (player) {
-        console.log(player);
-        player.animationState.setAnimation(0, "fall_down", false);
-    }
-}
+};

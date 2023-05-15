@@ -1,5 +1,5 @@
 import LastCardsMinted from './LastCardsMinted.js';
-import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeZoombiesCardMinted, SubscribeDailyReward, SubscribePackOpened } from './scripts/listeners.js';
+import { SubscribeZoomTransfer, SubscribeZoombiesTransfer, SubscribeCardMintedArr, SubscribeDailyReward, SubscribePackOpened } from './scripts/listeners.js';
 
 import { useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
@@ -46,7 +46,7 @@ export default function Contracts({zoomContract, zoombiesContract}) {
             UpdateZoombiesTotalSupply(zoombiesContract);
             UpdateBoosterCredits(zoombiesContract, account);
             SubscribeZoombiesTransfer(zoombiesContract); //TRANSFER ZOOMBIES
-            SubscribeZoombiesCardMinted(zoombiesContract, tokenId); //NEW CARD MINTED (pushes ID to tokenId array)
+            SubscribeCardMintedArr(zoombiesContract, tokenId); //NEW CARD MINTED (pushes ID to tokenId array)
             SubscribeDailyReward(zoombiesContract); //DAILY REWARD
             SubscribePackOpened(zoombiesContract); //PACK OPENED
 
