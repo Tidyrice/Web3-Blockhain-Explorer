@@ -151,11 +151,11 @@ export default function LastCardsMinted(zoombiesContract, tokenId) {
 
     return (
         <div>
-            {account && zoombiesContract && (tokenId.length !== 0) && (
-                
-                <div>
 
-                    <b>Last cards minted:</b>
+            <b>Last cards minted:</b>
+
+            {account && zoombiesContract && (tokenId.length !== 0) && (
+                <div>
                     
                     <Box
                         sx={{
@@ -172,8 +172,8 @@ export default function LastCardsMinted(zoombiesContract, tokenId) {
                     </Box>
 
                 </div>
-
             )}
+
         </div>
     )
 }

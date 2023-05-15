@@ -1,25 +1,57 @@
-import { useEffect } from "react";
-import * as spine from "@esotericsoftware/spine-core";
+import { useEffect, useState } from "react";
+import * as spine from "@esotericsoftware/spine-player";
 
 export default function Animations() {
-console.log(spine)
+
+    //functional components
+    const [spinePlayer, setSpinePlayer] = useState(null);
     useEffect(() => {
-        if (document.getElementById("spine-animation")) {
-            new spine.SpinePlayer('canvas-spine-animation', { //SpinePlayer NOT A FUNCTION :: ERROR
+
+        const animationContainer = document.getElementById("spine-animation");
+
+        if (animationContainer && !document.getElementsByClassName("spine-player")[0] /*prevents duplicates*/) {
+            new spine.SpinePlayer('spine-animation', {
                 jsonUrl: "https://zoombies.world/spine/space_walker_green.json",
                 atlasUrl: "https://zoombies.world/spine/Space_Walker_02.atlas",
-                showControls: false,
+                showControls: false, //ERROR :: when set to true, animations show. when set to false, animations don't show :: ERROR
                 alpha: true,
                 backgroundColor: "#00000000",
-                success: function (player) {
-                    setSpineRef(player); //NOT A FUNCTION :: ERROR
-                    startRandomAnimation(player); //NOT A FUNCTION :: ERROR
+                success: function (player) { //called after spinePlayer is successfully constructed
+                    setSpinePlayer(player);
+                    startRandomAnimation(player);
+                    animationContainer.addEventListener("click", () => clickAnimationHandler(player)); //do something on click
                 },
-                error: function (player, reason) {
+                error: function (reason) {
                     alert(reason);
                 }
             })
         }
+
     }, [])
 
+}
+
+
+//PRIVATE FUNCTIONS
+
+function getRandomAnimation() {
+    const animations = ["idle", "idle2", "run", "jump", "fall_down"];
+    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+    return randomAnimation;
+}
+
+function startRandomAnimation(player) {
+    const anim = getRandomAnimation();
+    player.animationState.setAnimation(0, anim, false);
+
+    setTimeout(() => {
+      startRandomAnimation(player);
+    }, 1000);
+  };
+
+function clickAnimationHandler(player) {
+    if (player) {
+        console.log(player);
+        player.animationState.setAnimation(0, "fall_down", false);
+    }
 }

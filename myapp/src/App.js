@@ -27,9 +27,6 @@ export default function App() {
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         const signer = provider.getSigner(account);
 
-        //animation
-        Animations();
-
         //reload page on network change
         provider.on("network", (newNetwork, oldNetwork) => { //https://docs.ethers.org/v5/concepts/best-practices/
           if (oldNetwork) {
@@ -61,6 +58,7 @@ export default function App() {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'nowrap',
+        //backgroundColor: "black"
       }}
     >
 
@@ -69,10 +67,12 @@ export default function App() {
         {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
       </div>
 
-      {/*spine animation*/}
-      <Box id="spine-animation" sx={{flex: -1, margin: 5, width: 240, height: 320}}>
-
-      </Box>
+      <div 
+        id="spine-animation"
+        className="spine-animation"
+        style={{flex: -1, width: 240, height: 320}} 
+      />
+      {Animations()}
 
       <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>
         <div style={{flex: -1}}>
