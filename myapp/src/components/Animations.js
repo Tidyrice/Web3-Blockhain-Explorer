@@ -20,16 +20,14 @@ export default function Animations({zoombiesContract}) {
             new spine.SpinePlayer('spine-animation', {
                 jsonUrl: "https://zoombies.world/spine/space_walker_green.json",
                 atlasUrl: "https://zoombies.world/spine/Space_Walker_02.atlas",
-                //animation: "idle", //animation on initial render
-                //animations: ["idle", "idle2", "run", "fall_down"], //avaliable animations
-                showControls: true, //ERROR :: when set to true, animations show. when set to false, animations don't show :: ERROR
+                animation: "idle", //animation on initial render
+                animations: ["fall_down", "idle", "idle2", "jump", "run"], //avaliable animations
+                showControls: false,
                 showLoading: false,
                 alpha: true,
                 backgroundColor: "#00000000",
-                success: function (player) { //called after spinePlayer is successfully constructed
+                success: function (player) { //called after spinePlayer is successfully constructed. WARN: calling startAnimation or play() does not work
                     setSpinePlayer(player);
-                    startIdleAnimation(player);
-                    player.play();
                     animationContainer.addEventListener("click", () => clickAnimationHandler(player)); //do something on click
                 },
                 error: function (reason) {

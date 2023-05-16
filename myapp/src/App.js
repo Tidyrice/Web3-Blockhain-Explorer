@@ -61,15 +61,15 @@ export default function App() {
       }}
     >
 
-      <div>
+      <div style={{flex: -1}}>
         {Status()}
         {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
       </div>
 
-      <div 
+      <Box
         id="spine-animation"
         className="spine-player"
-        style={{flex: -1, width: 360, height: 360}} 
+        sx={{flex: -1, ml: 20, width: 200, height: 600}} 
       />
       {Animations({zoombiesContract: zoombiesContract})}
 
