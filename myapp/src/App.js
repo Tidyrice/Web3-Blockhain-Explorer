@@ -9,9 +9,9 @@ import { useEffect, useState } from 'react'
 import { ethers, utils } from 'ethers';
 import { useEthers } from '@usedapp/core'
 import { Contract } from '@ethersproject/contracts';
+import Box from '@mui/material/Box/Box.js';
 import zoomArtifactJson from './resources/ZoomToken.json';
 import zoombiesArtifactJson from './resources/Zoombies.json';
-import Box from '@mui/material/Box/Box.js';
 
 export default function App() {
 
@@ -66,11 +66,6 @@ export default function App() {
         {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
       </div>
 
-      <Box
-        id="spine-animation"
-        className="spine-player"
-        sx={{flex: -1, ml: 20, width: 200, height: 600}} 
-      />
       {Animations({zoombiesContract: zoombiesContract})}
 
       <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>

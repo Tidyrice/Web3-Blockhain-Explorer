@@ -15,33 +15,33 @@ export default function Status() {
             {!account && <Button variant="contained" onClick={() => activateBrowserWallet()}>Connect</Button> /*only displays when not connected*/}
                 
             {account && etherBalance && (
-            <div>
+              <div>
 
-                <h1>CONNECTED - {chainName(chainId)}</h1>
+                  <h1>CONNECTED - {chainName(chainId)}</h1>
 
-                <br />
+                  <br />
 
-                <b>Wallet Address:</b>
-                <p>{account}</p>
+                  <b>Wallet Address:</b>
+                  <p>{account}</p>
 
-                <br />
+                  <br />
 
-                <b>ChainID:</b>
-                <p>{chainId}</p>
+                  <b>ChainID:</b>
+                  <p>{chainId}</p>
 
-                <br />
+                  <br />
 
-                <b>Balance (GLMR):</b>
-                <p>{formatEther(etherBalance)}</p>
+                  <b>Balance (GLMR):</b>
+                  <p>{formatEther(etherBalance)}</p>
 
-                <br />
+                  <br />
 
-                <b>Current block number:</b>
-                <p>{blockNumber}</p>
+                  <b>Current block number:</b>
+                  <p>{blockNumber}</p>
 
-                <br />
+                  <br />
 
-            </div>
+              </div>
             )}
 
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {  useBlockNumber, useEthers } from '@usedapp/core';
+import Box from '@mui/material/Box/Box.js';
 import * as spine from "@esotericsoftware/spine-player";
 
 import { SubscribeCardMintedAnim, SubscribeCardSacrificeAnim } from "./scripts/listeners";
@@ -53,6 +54,20 @@ export default function Animations({zoombiesContract}) {
         }
     }, [blockNumber, lastBlockNumber, chainId, spinePlayer]);
 
+
+    return (
+        <div>
+
+            {zoombiesContract && (chainId === 1284 || chainId === 1285 || chainId === 1287) && (
+                <Box
+                    id="spine-animation"
+                    className="spine-player"
+                    sx={{flex: -1, ml: 20, width: 200, height: 600}}
+                />
+            )}
+
+        </div>
+    )
 }
 
 
