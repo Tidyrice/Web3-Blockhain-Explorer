@@ -53,31 +53,49 @@ export default function App() {
 
   return (
 
-    <Box
-      sx={{
-        p: 2,
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-      }}
-    >
+    <div>
+      
+      <div //background
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%"
+        }}
+      >
 
-      {StarField()}
+        {StarField()}
 
-      <div style={{flex: -1}}>
-        {Status()}
-        {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
       </div>
 
-      {Animations({zoombiesContract: zoombiesContract})}
 
-      <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>
+      <Box //content
+        sx={{
+          position: "relative",
+          p: 2,
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'nowrap',
+        }}
+      >
+
         <div style={{flex: -1}}>
-          {Transactions({zoombiesContract: zoombiesContract})}
+          {Status()}
+          {Contracts({zoomContract: zoomContract, zoombiesContract: zoombiesContract})}
         </div>
-      </div>
 
-    </Box>
+        {Animations({zoombiesContract: zoombiesContract})}
+
+        <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>
+          <div style={{flex: -1}}>
+            {Transactions({zoombiesContract: zoombiesContract})}
+          </div>
+        </div>
+
+      </Box>
+
+    </div>
 
   )
 }

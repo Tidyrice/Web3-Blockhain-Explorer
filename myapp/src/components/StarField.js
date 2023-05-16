@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Phaser from "phaser";
 
 export default function StarField() {
@@ -10,7 +10,7 @@ export default function StarField() {
         const speed = 0.5;
         const stars = [];
 
-        const max = 10; //max amount of stars
+        const max = 100; //max amount of stars
         const x = [];
         const y = [];
         const z = [];
@@ -22,17 +22,16 @@ export default function StarField() {
         window.addEventListener('resize', function() {
             screenWidth = window.screen.width;
             screenHeight = window.screen.height;
-            console.log('resize')
         }, true);
 
 
         //rendering the stars
         function preload() {
-            this.load.image("star", "./images/star.png");
+            this.load.image("star", "star.png");
         }
         function create() {
             for (let i = 0; i < max; i++) {
-                stars.push(this.add.sprite(config.width / 2, config.height / 2, "star"));
+                stars.push(this.add.image(config.width / 2, config.height / 2, "star"));
                 x[i] = Math.floor(Math.random() * 800) - 400;
                 y[i] = Math.floor(Math.random() * 600) - 300;
                 z[i] = Math.floor(Math.random() * 1700) - 100;
@@ -56,6 +55,7 @@ export default function StarField() {
 
         const config = {
             type: Phaser.AUTO,
+            parent: "star-field",
             width: screenWidth,
             height: screenHeight,
             scale: {

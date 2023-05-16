@@ -112,7 +112,7 @@ function newBlockAnimationHandler(player) {
 
 function clickAnimationHandler(player) {
     if (player) {
-        console.log("clicked");
+        //do something on click
     }
 }
 
