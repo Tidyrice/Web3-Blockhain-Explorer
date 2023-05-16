@@ -3,6 +3,7 @@ import Status from './components/Status.js';
 import Contracts from './components/Contracts.js'; //includes LastCardsMinted component
 import Transactions from './components/Transactions.js';
 import Animations from './components/Animations.js';
+import StarField from './components/StarField.js';
 
 //dependencies
 import { useEffect, useState } from 'react'
@@ -60,6 +61,8 @@ export default function App() {
         flexWrap: 'nowrap',
       }}
     >
+
+      {StarField()}
 
       <div style={{flex: -1}}>
         {Status()}
