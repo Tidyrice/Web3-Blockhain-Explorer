@@ -4,6 +4,7 @@ import Contracts from './components/Contracts.js'; //includes LastCardsMinted co
 import Transactions from './components/Transactions.js';
 import Animations from './components/Animations.js';
 import StarField from './components/StarField.js';
+import Cards from './components/Cards.js'; //advanced CSS demo
 
 //dependencies
 import { useEffect, useState } from 'react'
@@ -87,8 +88,10 @@ export default function App() {
 
         {Animations({zoombiesContract: zoombiesContract})}
 
+        {Cards()}
+
         <div style={{flex: 1, display: 'flex', justifyContent: 'flex-end'}}>
-          <div style={{flex: -1}}>
+          <div style={{width: "700px"}}>
             {Transactions({zoombiesContract: zoombiesContract})}
           </div>
         </div>
