@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Box } from '@mui/material';
-import { transform } from "typescript";
+import "./Cards.css";
 
 //spring configuration
 const dampen = 0.020; //dampen the rotation (higher number = less rotation)
-const enlargeScale = 1.1 //scale up when hovered
 
 function Card({cardURL}) { //individual card element
 
@@ -29,7 +28,8 @@ function Card({cardURL}) { //individual card element
 
 
     //card animation
-    const [rotation, setRotation] = useState({ x: 0, y: 0});
+    const [rotation, setRotation] = useState({ x: 0, y: 0 }); //degrees to rotate card (with dampening)
+    const [xy, setXy] = useState({ x: 0, y: 0 }); //mouse position within the card
     const [isHovered, setIsHovered] = useState(false); //keep track of whether card is hovered
 
     function handleMouseMove(event) {
@@ -39,44 +39,93 @@ function Card({cardURL}) { //individual card element
         //mouse position within the card
         const x = (clientX - left) / width; //ranges from 0 to 1
         const y = (clientY - top) / height; //ranges from 0 to 1
+        setXy({ x: x, y: y });
 
         //calculate rotation
-        const rotationX = (y - 0.5) / dampen; // y - 0.5 to center the rotation (y ranges from -0.5 to 0.5)
-        const rotationY = (x - 0.5) / dampen; // x - 0.5 to center the rotation
+        const rotationX = (xy.y - 0.5) / dampen; // y - 0.5 to center the rotation (y ranges from -0.5 to 0.5)
+        const rotationY = (xy.x - 0.5) / dampen; // x - 0.5 to center the rotation
 
         setRotation({ x: rotationX, y: rotationY });
     }
 
     function handleMouseEnter() {
         setIsHovered(true);
+        document.getElementById(card.id).style.transition = "transform 0.5s"; //card rotates responsively (no transition time)
+        document.getElementById(card.id).style.transition = ""; //card rotates responsively (no transition time)
     }
 
     function handleMouseLeave() {
         setIsHovered(false);
         setRotation({ x: 0, y: 0 }); //reset to default
+        document.getElementById(card.id).style.transition = "transform 0.5s"; //card returns to rest gracefully
     }
+
+
+    //card showcase
+    const [showcase, setShowcase] = useState(false);
 
     function handleOnClick() {
-
+        if (!showcase) { //start showcasing when card clicked
+            setShowcase(true);
+        }
     }
+
+    useEffect(() => { //stop showcasing when clicked outside of card
+        if (!showcase) {
+            return;
+        }
+
+        function handleDocumentClick() {
+            setShowcase(false);
+        }
+
+        let timeout = setTimeout(() => { //wait out the transition time before attaching listener
+            document.addEventListener("click", handleDocumentClick);
+        }, 500);
+
+        return () => {
+            clearTimeout(timeout); //for safety
+            document.removeEventListener("click", handleDocumentClick);
+        }
+    }, [showcase]);
 
 
     return (
         <div>
             {card && (
-                <div
-                    onMouseEnter={handleMouseEnter}
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                    onClick={handleOnClick}
-
-                    style = {{
-                        zIndex : isHovered ? 2 : 1, //overlap other cards when hovered (scaling up)
-                        transform: `perspective(600px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) scale(${isHovered ? enlargeScale : 1})`
-                    }}
+                <div 
+                    className={"card" + (isHovered ? " enlarged" : "") + (showcase ? " showcase" : "")} //add classnames for CSS
                 >
 
-                    <img src={card.imageURL} alt="" width= "190.3px" height= "306.933px" />
+                    <div
+                        id={card.id}
+                        className="card-content"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                        onClick={handleOnClick}
+
+                        style = {{
+                            transform: `perspective(600px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+                        }}
+                    >
+
+                        <img src={card.imageURL} alt="" style={{maxWidth: "250px"}} />
+
+                        <div
+                            className="glare"
+                            style={{
+                                transform: isHovered ? `translate(${xy.x*120}px, ${xy.y*120}px) scale(${isHovered ? 1.1 : 1})`: "",
+                                backgroundImage:
+                                    `radial-gradient(farthest-corner circle at ${xy.x} ${xy.y},
+                                    hsla(50, 20%, 90%, 0.45) 0%,
+                                    hsla(150, 20%, 30%, 0.45) 45%,
+                                    hsla(0, 0%, 0%, .9) 120%);`,
+
+                            }}
+                        />
+
+                    </div>
 
                 </div>
             )}
