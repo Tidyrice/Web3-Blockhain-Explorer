@@ -5,14 +5,14 @@ import "./Cards.css";
 //spring configuration
 const dampen = 0.020; //dampen the rotation (higher number = less rotation)
 
-function Card({cardURL}) { //individual card element
+function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
     //getting card from API call
-    const [card, setCard] = useState(null);
+    const [thisCard, setThisCard] = useState(null);
     useEffect(() => {
         getCardFromAPI(cardURL)
         .then((result) => { //result is in this format: https://zoombies.world/services/card_types/mb/37.json (parsed JSON)
-            setCard({ //set card object
+            setThisCard({ //set card object
                 name: result.name,
                 imageURL: result.image,
                 description: result.description,
@@ -25,6 +25,20 @@ function Card({cardURL}) { //individual card element
             console.log(error);
         })
     }, [cardURL]);
+
+
+    //animation and showcase precondition
+    useEffect(() => {
+        if (thisCard) {
+            console.log(activeCard);
+            if (activeCard && (activeCard !== thisCard)) { //if this card is not the showcased card, prevent interaction
+                document.getElementById(thisCard.id).style.pointerEvents = "none";
+            }
+            else { //if this card is the showcased card, allow interaction
+                document.getElementById(thisCard.id).style.pointerEvents = "auto";
+            }
+        }
+    }, [activeCard, thisCard])
 
 
     //card animation
@@ -50,14 +64,13 @@ function Card({cardURL}) { //individual card element
 
     function handleMouseEnter() {
         setIsHovered(true);
-        document.getElementById(card.id).style.transition = "transform 0.5s"; //card rotates responsively (no transition time)
-        document.getElementById(card.id).style.transition = ""; //card rotates responsively (no transition time)
+        document.getElementById(thisCard.id).style.transition = ""; //card rotates responsively (no transition time)
     }
 
     function handleMouseLeave() {
         setIsHovered(false);
         setRotation({ x: 0, y: 0 }); //reset to default
-        document.getElementById(card.id).style.transition = "transform 0.5s"; //card returns to rest gracefully
+        document.getElementById(thisCard.id).style.transition = "transform 0.5s"; //card returns to rest gracefully
     }
 
 
@@ -67,16 +80,19 @@ function Card({cardURL}) { //individual card element
     function handleOnClick() {
         if (!showcase) { //start showcasing when card clicked
             setShowcase(true);
+            setActiveCard(thisCard); //let other cards know this card is being showcased
         }
     }
 
-    useEffect(() => { //stop showcasing when clicked outside of card
+    //stop showcasing when clicked outside of card
+    useEffect(() => {
         if (!showcase) {
             return;
         }
 
         function handleDocumentClick() {
             setShowcase(false);
+            setActiveCard(null); //let other cards know this card is no longer being showcased
         }
 
         let timeout = setTimeout(() => { //wait out the transition time before attaching listener
@@ -84,21 +100,21 @@ function Card({cardURL}) { //individual card element
         }, 500);
 
         return () => {
-            clearTimeout(timeout); //for safety
+            clearTimeout(timeout);
             document.removeEventListener("click", handleDocumentClick);
         }
-    }, [showcase]);
+    }, [showcase, activeCard, setActiveCard]);
 
 
     return (
         <div>
-            {card && (
+            {thisCard && (
                 <div 
                     className={"card" + (isHovered ? " enlarged" : "") + (showcase ? " showcase" : "")} //add classnames for CSS
                 >
 
                     <div
-                        id={card.id}
+                        id={thisCard.id}
                         className="card-content"
                         onMouseEnter={handleMouseEnter}
                         onMouseMove={handleMouseMove}
@@ -110,18 +126,12 @@ function Card({cardURL}) { //individual card element
                         }}
                     >
 
-                        <img src={card.imageURL} alt="" style={{maxWidth: "250px"}} />
+                        <img src={thisCard.imageURL} alt="" style={{maxWidth: "250px"}} />
 
                         <div
                             className="glare"
                             style={{
                                 transform: isHovered ? `translate(${xy.x*120}px, ${xy.y*120}px) scale(${isHovered ? 1.1 : 1})`: "",
-                                backgroundImage:
-                                    `radial-gradient(farthest-corner circle at ${xy.x} ${xy.y},
-                                    hsla(50, 20%, 90%, 0.45) 0%,
-                                    hsla(150, 20%, 30%, 0.45) 45%,
-                                    hsla(0, 0%, 0%, .9) 120%);`,
-
                             }}
                         />
 
@@ -136,6 +146,8 @@ function Card({cardURL}) { //individual card element
 
 export default function Cards() {
 
+    const [activeCard, setActiveCard] = useState(null); //card that is being showcased
+
     return (
         <Box
             sx={{
@@ -146,11 +158,11 @@ export default function Cards() {
 
             <b>Card showcase:</b>
 
-            <Card cardURL={"https://zoombies.world/nft/moonbeam/100" /*common*/} />
-            <Card cardURL={"https://zoombies.world/nft/moonbeam/1090" /*uncommon*/} />
-            <Card cardURL={"https://zoombies.world/nft/moonbeam/6" /*rare*/} />
+            <Card cardURL={"https://zoombies.world/nft/moonbeam/100" /*common*/} activeCard={activeCard} setActiveCard={setActiveCard} />
+            <Card cardURL={"https://zoombies.world/nft/moonbeam/1090" /*uncommon*/} activeCard={activeCard} setActiveCard={setActiveCard} />
+            <Card cardURL={"https://zoombies.world/nft/moonbeam/6" /*rare*/} activeCard={activeCard} setActiveCard={setActiveCard} />
             {/* <Card cardURL={card4} /> */}
-            <Card cardURL={"https://zoombies.world/nft/moonbeam/79" /*platinum*/} />
+            <Card cardURL={"https://zoombies.world/nft/moonbeam/79" /*platinum*/} activeCard={activeCard} setActiveCard={setActiveCard} />
 
         </Box>
     )
