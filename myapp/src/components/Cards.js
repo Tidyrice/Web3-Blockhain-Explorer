@@ -4,8 +4,11 @@ import "./Cards.css";
 
 //spring configuration
 const dampen = 0.020; //dampen the rotation (higher number = less rotation)
+const showcaseScale = 1.6; //scale of the showcased card
 
 function Card({cardURL, activeCard, setActiveCard}) { //individual card element
+
+    const root = document.documentElement; //get CSS root element
 
     //getting card from API call
     const [thisCard, setThisCard] = useState(null);
@@ -30,12 +33,14 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     //animation and showcase precondition
     useEffect(() => {
         if (thisCard) {
-            console.log(activeCard);
             if (activeCard && (activeCard !== thisCard)) { //if this card is not the showcased card, prevent interaction
                 document.getElementById(thisCard.id).style.pointerEvents = "none";
             }
-            else { //if this card is the showcased card, allow interaction
-                document.getElementById(thisCard.id).style.pointerEvents = "auto";
+            else { //if this card is the showcased card OR there is no showcased card, allow interaction
+                const timeout = setTimeout(() => { //wait out the transition
+                    document.getElementById(thisCard.id).style.pointerEvents = "auto";
+                }, 500);
+                return () => clearTimeout(timeout);
             }
         }
     }, [activeCard, thisCard])
@@ -44,6 +49,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     //card animation
     const [rotation, setRotation] = useState({ x: 0, y: 0 }); //degrees to rotate card (with dampening)
     const [xy, setXy] = useState({ x: 0, y: 0 }); //mouse position within the card
+    const [delta, setDelta] = useState({ x: 0, y: 0 }); //distance from card to center of screen (for translation);
     const [isHovered, setIsHovered] = useState(false); //keep track of whether card is hovered
 
     function handleMouseMove(event) {
@@ -77,12 +83,56 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     //card showcase
     const [showcase, setShowcase] = useState(false);
 
+    function startShowcase() {
+        setCenter(); //set card to center of screen
+        setShowcase(true);
+        setActiveCard(thisCard); //let other cards know this card is being showcased
+    }
+
     function handleOnClick() {
         if (!showcase) { //start showcasing when card clicked
-            setShowcase(true);
-            setActiveCard(thisCard); //let other cards know this card is being showcased
+            startShowcase();
+        }
+        else { //flip the card when clicked again
+
         }
     }
+
+    //set card to center of screen for showcasing
+    function setCenter() { //set card to center of screen
+        const cardHtmlElement = document.getElementById(thisCard.id).parentElement; //parent element has constant width and height
+        const { left, top, width, height } = cardHtmlElement.getBoundingClientRect(); //get element's position relative to viewport
+        const view = document.documentElement; //get viewport size
+
+        const delta = { //distance to center of screen
+            x: Math.round(view.clientWidth / 2 - left - (width / 2)),
+            y: Math.round(view.clientHeight / 2 - top - (height / 2)),
+        };
+
+        setDelta(delta);
+    }
+
+    //reposition showcased card when window is resized
+    useEffect(() => {
+        if (!showcase) {
+            return;
+        }
+
+        let timeout;
+        function reposition() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                setCenter();
+            }, 300);
+        }
+
+        document.addEventListener("scroll", reposition);
+
+        return () => {
+            clearTimeout(timeout);
+            document.removeEventListener("scroll", reposition);
+        }
+    }, [showcase]);
 
     //stop showcasing when clicked outside of card
     useEffect(() => {
@@ -90,20 +140,21 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
             return;
         }
 
-        function handleDocumentClick() {
+        function stopShowcase() {
             setShowcase(false);
             setActiveCard(null); //let other cards know this card is no longer being showcased
+            document.getElementById(thisCard.id).style.pointerEvents = "none"; //prevent interaction with this card during transition
         }
 
         let timeout = setTimeout(() => { //wait out the transition time before attaching listener
-            document.addEventListener("click", handleDocumentClick);
+            document.addEventListener("click", stopShowcase);
         }, 500);
 
         return () => {
             clearTimeout(timeout);
-            document.removeEventListener("click", handleDocumentClick);
+            document.removeEventListener("click", stopShowcase);
         }
-    }, [showcase, activeCard, setActiveCard]);
+    }, [showcase, activeCard, setActiveCard, thisCard]);
 
 
     return (
@@ -111,6 +162,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
             {thisCard && (
                 <div 
                     className={"card" + (isHovered ? " enlarged" : "") + (showcase ? " showcase" : "")} //add classnames for CSS
+                    style={{transform: showcase ? `translate(${delta.x}px, ${delta.y}px) scale(${showcaseScale})` : ""}}
                 >
 
                     <div
@@ -151,6 +203,7 @@ export default function Cards() {
     return (
         <Box
             sx={{
+                position: "relative",
                 p: 1,
                 m: 1,
             }}
@@ -173,62 +226,3 @@ async function getCardFromAPI(URL) {
     const data = await response.json();
     return data; //return is in this format: https://zoombies.world/services/card_types/mb/37.json
 }
-
-
-//IMPLEMENTATION WITH REACT-SPRING
-/*
-const ref = useRef();
-const [isHovered, setIsHovered] = useState(false); //keep track of whether card is hovered
-const [springRotate, setSpringRotate] = useSpring(() => {
-    return {
-        xys: [0, 0, 1],
-        config: springConfig,
-    };
-});
-
-<animated.div // CODE REFERENCED: https://usehooks.com/useSpring/
-    ref={ref}
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseMove={({ clientX, clientY }) => {
-
-        //get mouse x position within card
-        const x =
-            clientX -
-            (ref.current.offsetLeft -
-                (window.scrollX || window.pageXOffset || document.body.scrollLeft));
-
-        //get mouse y position within card
-        const y =
-            clientY -
-            (ref.current.offsetTop -
-                (window.scrollY || window.pageYOffset || document.body.scrollTop));
-
-        //set animated values based on mouse position and card dimensions
-        const dampen = damp; //dampen the rotation
-        const xys = [
-            -(y - ref.current.clientHeight / 2) / dampen, //x rotation
-            (x - ref.current.clientWidth / 2) / dampen, //y rotation
-            1.07, //scale
-        ];
-
-        //update values to animate to
-        setSpringRotate({ xys: xys });
-
-    }}
-    onMouseLeave={() => {
-        setIsHovered(false);
-        setSpringRotate({ xys: [0, 0, 1] }); //reset to default
-    }}
-    style={{
-        zIndex : isHovered ? 2 : 1, //overlap other cards when hovered (scaling up)
-        transform: springRotate.xys.to(
-            (x, y, s) =>
-                `perspective(600px) rotateX(${x}deg) rotateY(${y}deg) scale(${s})`
-        ),
-    }}
->
-
-    <img src={card.imageURL} alt="" width= "190.3px" height= "306.933px" />
-
-</animated.div>
-*/

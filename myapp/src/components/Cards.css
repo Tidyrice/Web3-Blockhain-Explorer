@@ -1,27 +1,22 @@
 :root {
-    --hover-scale: 1.1;
-    --showcase-scale: 1.5;
+    --hover-scale: 1.2;
 }
 
 .card {
-    position: static;
-    /* width: 275px;
-    height: 450px; */
     transform: scale(1); /* default size */
-    transition: 0.5s ease;
+    transition: transform 0.5s ease, top 0.5s ease, left 0.5s ease;
+    z-index: 1;
 }
 
 .card.enlarged {
+    position: relative;
     transform: scale(var(--hover-scale));
-    transition: 0.5s ease;
+    transition: all 0.5s ease;
     z-index: 2; /*put this element in front of other cards */
 }
 
 .card.showcase {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(var(--showcase-scale));
+    position: relative;
     transition: 0.5s ease;
     z-index: 9999; /*put this element in front of everything*/
 }
