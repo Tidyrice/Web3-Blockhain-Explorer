@@ -4,20 +4,18 @@
 
 .card {
     transform: scale(1); /* default size */
-    transition: transform 0.5s ease, top 0.5s ease, left 0.5s ease;
+    transition: transform 0.5s ease;
     z-index: 1;
 }
 
 .card.enlarged {
     position: relative;
     transform: scale(var(--hover-scale));
-    transition: all 0.5s ease;
     z-index: 2; /*put this element in front of other cards */
 }
 
 .card.showcase {
     position: relative;
-    transition: 0.5s ease;
     z-index: 9999; /*put this element in front of everything*/
 }
 

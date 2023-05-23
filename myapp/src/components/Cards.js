@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Box } from '@mui/material';
 import "./Cards.css";
 
@@ -99,18 +99,20 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     }
 
     //set card to center of screen for showcasing
-    function setCenter() { //set card to center of screen
+    const setCenter = useCallback(() => { //set card to center of screen
         const cardHtmlElement = document.getElementById(thisCard.id).parentElement; //parent element has constant width and height
         const { left, top, width, height } = cardHtmlElement.getBoundingClientRect(); //get element's position relative to viewport
         const view = document.documentElement; //get viewport size
 
-        const delta = { //distance to center of screen
-            x: Math.round(view.clientWidth / 2 - left - (width / 2)),
-            y: Math.round(view.clientHeight / 2 - top - (height / 2)),
-        };
+        //distance to center of screen
+        const xTranslate = Math.round((view.clientWidth / 2) - left - (width / 2));
+        const yTranslate = Math.round((view.clientHeight / 2) - top - (height / 2));
 
-        setDelta(delta);
-    }
+        const newX = delta.x + xTranslate;
+        const newY = delta.y + yTranslate;
+
+        setDelta({ x: newX, y: newY });
+    }, [delta, thisCard])
 
     //reposition showcased card when window is resized
     useEffect(() => {
@@ -118,21 +120,26 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
             return;
         }
 
-        let timeout;
+        let repositionTimer;
         function reposition() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                setCenter();
+            clearTimeout(repositionTimer);
+            repositionTimer = setTimeout(() => {
+                if (showcase) {
+                    setCenter();
+                }
             }, 300);
         }
 
         document.addEventListener("scroll", reposition);
+        window.addEventListener("resize", reposition);
 
         return () => {
-            clearTimeout(timeout);
+            clearTimeout(repositionTimer);
+
             document.removeEventListener("scroll", reposition);
+            window.removeEventListener("resize", reposition);
         }
-    }, [showcase]);
+    }, [showcase, setCenter]);
 
     //stop showcasing when clicked outside of card
     useEffect(() => {
@@ -143,6 +150,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         function stopShowcase() {
             setShowcase(false);
             setActiveCard(null); //let other cards know this card is no longer being showcased
+            setDelta({ x: 0, y: 0 });
             document.getElementById(thisCard.id).style.pointerEvents = "none"; //prevent interaction with this card during transition
         }
 
