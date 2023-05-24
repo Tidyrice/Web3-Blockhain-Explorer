@@ -2,21 +2,56 @@
     --hover-scale: 1.2;
 }
 
+.card-grid {
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(410px, 1fr));
+    grid-gap: 1rem;
+    padding: 1rem;
+    margin: 0 auto;
+}
+
 .card {
+    position: relative;
     transform: scale(1); /* default size */
-    transition: transform 0.5s ease;
+    transition: 0.5s ease;
     z-index: 1;
+    transform: rotateY(10deg);
 }
 
 .card.enlarged {
-    position: relative;
     transform: scale(var(--hover-scale));
     z-index: 2; /*put this element in front of other cards */
 }
 
 .card.showcase {
-    position: relative;
     z-index: 9999; /*put this element in front of everything*/
+}
+
+.card.flipped {
+
+}
+
+.card-content {
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+
+
+.face { /*applies to both front and back*/
+    position: absolute;
+    backface-visibility: hidden;
+}
+
+.front {
+    backface-visibility: hidden;
+}
+
+.back {
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
 }
 
 .glare {

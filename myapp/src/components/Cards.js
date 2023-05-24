@@ -1,14 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
-import { Box } from '@mui/material';
 import "./Cards.css";
+
+const cardBackURL = "https://zoombies.world/card-gen/assets/zoombies_card_back.svg";
+const cardWidth = 260; //max width of the card (px)
+const cardHeight = 410; //max height of the card (px)
 
 //spring configuration
 const dampen = 0.020; //dampen the rotation (higher number = less rotation)
 const showcaseScale = 1.6; //scale of the showcased card
 
 function Card({cardURL, activeCard, setActiveCard}) { //individual card element
-
-    const root = document.documentElement; //get CSS root element
 
     //getting card from API call
     const [thisCard, setThisCard] = useState(null);
@@ -50,7 +51,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     const [rotation, setRotation] = useState({ x: 0, y: 0 }); //degrees to rotate card (with dampening)
     const [xy, setXy] = useState({ x: 0, y: 0 }); //mouse position within the card
     const [delta, setDelta] = useState({ x: 0, y: 0 }); //distance from card to center of screen (for translation);
-    const [isHovered, setIsHovered] = useState(false); //keep track of whether card is hovered
+    const [isHovered, setIsHovered] = useState(false); //card hovered?
 
     function handleMouseMove(event) {
         const { clientX, clientY, target } = event;
@@ -82,6 +83,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
     //card showcase
     const [showcase, setShowcase] = useState(false);
+    const [isFlipped, setIsFlipped] = useState(false); //card flipped?
 
     function startShowcase() {
         setCenter(); //set card to center of screen
@@ -92,9 +94,10 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     function handleOnClick() {
         if (!showcase) { //start showcasing when card clicked
             startShowcase();
+            setIsFlipped(false); //card is not flipped when initially showcased
         }
         else { //flip the card when clicked again
-
+            setIsFlipped(!isFlipped);
         }
     }
 
@@ -149,6 +152,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
         function stopShowcase() {
             setShowcase(false);
+            setIsFlipped(false);
             setActiveCard(null); //let other cards know this card is no longer being showcased
             setDelta({ x: 0, y: 0 });
             document.getElementById(thisCard.id).style.pointerEvents = "none"; //prevent interaction with this card during transition
@@ -166,38 +170,48 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
 
     return (
-        <div>
+        <div
+            className={"card" + (isHovered ? " enlarged" : "") + (showcase ? " showcase" : "") + (isFlipped ? " flipped" : "")} //add classnames for CSS
+            style={{
+                transform: showcase ? `translate(${delta.x}px, ${delta.y}px)
+                 ${isFlipped ? "rotateY(180deg)" : ""}
+                 scale(${showcaseScale})` : ""
+            }}
+        >
             {thisCard && (
-                <div 
-                    className={"card" + (isHovered ? " enlarged" : "") + (showcase ? " showcase" : "")} //add classnames for CSS
-                    style={{transform: showcase ? `translate(${delta.x}px, ${delta.y}px) scale(${showcaseScale})` : ""}}
+
+                <div
+                    id={thisCard.id}
+                    className="card-content"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={handleOnClick}
+
+                    style = {{
+                        transform: `perspective(600px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+                        width: `${cardWidth}px`,
+                        height: `${cardHeight}px`,
+                    }}
                 >
 
-                    <div
-                        id={thisCard.id}
-                        className="card-content"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseLeave}
-                        onClick={handleOnClick}
-
-                        style = {{
-                            transform: `perspective(600px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-                        }}
-                    >
-
-                        <img src={thisCard.imageURL} alt="" style={{maxWidth: "250px"}} />
-
-                        <div
-                            className="glare"
-                            style={{
-                                transform: isHovered ? `translate(${xy.x*120}px, ${xy.y*120}px) scale(${isHovered ? 1.1 : 1})`: "",
-                            }}
-                        />
-
+                    <div className="face front">
+                        <img src={thisCard.imageURL} alt="" style={{maxWidth: `${cardWidth}px`, maxHeight: `${cardHeight}px`}} />
                     </div>
 
+                    <div className="face back">
+                        <img src={cardBackURL} alt="" style={{maxWidth: `${cardWidth}px`, maxHeight: `${cardHeight}px`}} />
+                    </div>
+
+                    <div
+                        className="glare"
+                        style={{
+                            transform: isHovered ? `translate(${xy.x*120}px, ${xy.y*120}px) scale(${isHovered ? 1.1 : 1})`: "",
+                        }}
+                    />
+
                 </div>
+
             )}
         </div>
     )
@@ -209,15 +223,9 @@ export default function Cards() {
     const [activeCard, setActiveCard] = useState(null); //card that is being showcased
 
     return (
-        <Box
-            sx={{
-                position: "relative",
-                p: 1,
-                m: 1,
-            }}
+        <div
+            className="card-grid"
         >
-
-            <b>Card showcase:</b>
 
             <Card cardURL={"https://zoombies.world/nft/moonbeam/100" /*common*/} activeCard={activeCard} setActiveCard={setActiveCard} />
             <Card cardURL={"https://zoombies.world/nft/moonbeam/1090" /*uncommon*/} activeCard={activeCard} setActiveCard={setActiveCard} />
@@ -225,7 +233,7 @@ export default function Cards() {
             {/* <Card cardURL={card4} /> */}
             <Card cardURL={"https://zoombies.world/nft/moonbeam/79" /*platinum*/} activeCard={activeCard} setActiveCard={setActiveCard} />
 
-        </Box>
+        </div>
     )
 }
 
