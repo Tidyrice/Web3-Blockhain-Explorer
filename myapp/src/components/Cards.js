@@ -179,9 +179,11 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         <div
             className={"card" + (isHovered ? " enlarged" : "") + (showcase ? " showcase" : "") + (isFlipped ? " flipped" : "")} //add classnames for CSS
             style={{
-                transform: showcase ? `translate(${delta.x}px, ${delta.y}px)
-                 ${isFlipped ? "rotateY(180deg)" : ""}
-                 scale(${showcaseScale})` : ""
+                transform: showcase ? (
+                    `translate(${delta.x}px, ${delta.y}px) ` +
+                    `${isFlipped ? "rotateY(180deg)" : ""} ` +
+                    `scale(${showcaseScale})`
+                ) : "",
             }}
         >
             {thisCard && (

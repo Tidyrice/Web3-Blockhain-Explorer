@@ -17,7 +17,6 @@
     transform: scale(1); /* default size */
     transition: 0.5s ease;
     z-index: 1;
-    transform: rotateY(10deg);
 }
 
 .card.enlarged {
@@ -35,24 +34,34 @@
 
 .card-content {
     position: relative;
-    transform-style: preserve-3d;
 }
 
 
 
 .face { /*applies to both front and back*/
     position: absolute;
+    pointer-events: none;
     backface-visibility: hidden;
+    transition: 0.5s ease;
 }
 
 .front {
-    backface-visibility: hidden;
+
 }
 
 .back {
-    backface-visibility: hidden;
     transform: rotateY(180deg);
 }
+
+.card.flipped .front {
+    transform: rotateY(180deg);
+}
+
+.card.flipped .back {
+    transform: rotateY(0deg);
+}
+
+
 
 .glare {
     position: absolute;
