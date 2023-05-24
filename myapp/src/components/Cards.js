@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import "./Cards.css";
 
 const cardBackURL = "https://zoombies.world/card-gen/assets/zoombies_card_back.svg";
@@ -38,10 +38,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
                 document.getElementById(thisCard.id).style.pointerEvents = "none";
             }
             else { //if this card is the showcased card OR there is no showcased card, allow interaction
-                const timeout = setTimeout(() => { //wait out the transition
-                    document.getElementById(thisCard.id).style.pointerEvents = "auto";
-                }, 500);
-                return () => clearTimeout(timeout);
+                document.getElementById(thisCard.id).style.pointerEvents = "auto";
             }
         }
     }, [activeCard, thisCard])
@@ -84,6 +81,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     //card showcase
     const [showcase, setShowcase] = useState(false);
     const [isFlipped, setIsFlipped] = useState(false); //card flipped?
+    const isFlippedPrev = useRef(isFlipped); //previous value of isFlipped (for useEffect)
 
     function startShowcase() {
         setCenter(); //set card to center of screen
@@ -95,12 +93,14 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         if (!showcase) { //start showcasing when card clicked
             startShowcase();
             setIsFlipped(false); //card is not flipped when initially showcased
+            isFlippedPrev.current = false;
         }
         else { //flip the card when clicked again
             setIsFlipped(!isFlipped);
         }
     }
 
+    
     //set card to center of screen for showcasing
     const setCenter = useCallback(() => { //set card to center of screen
         const cardHtmlElement = document.getElementById(thisCard.id).parentElement; //parent element has constant width and height
@@ -116,6 +116,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
         setDelta({ x: newX, y: newY });
     }, [delta, thisCard])
+
 
     //reposition showcased card when window is resized
     useEffect(() => {
@@ -138,11 +139,11 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
         return () => {
             clearTimeout(repositionTimer);
-
             document.removeEventListener("scroll", reposition);
             window.removeEventListener("resize", reposition);
         }
     }, [showcase, setCenter]);
+
 
     //stop showcasing when clicked outside of card
     useEffect(() => {
@@ -153,26 +154,35 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         function stopShowcase() {
             setShowcase(false);
             setIsFlipped(false);
+            isFlippedPrev.current = false;
             setActiveCard(null); //let other cards know this card is no longer being showcased
             setDelta({ x: 0, y: 0 });
             document.getElementById(thisCard.id).style.pointerEvents = "none"; //prevent interaction with this card during transition
         }
 
-        const outsideClickListener = (event) => {
+        function outsideClickListener(event) {
             if (!document.getElementById(thisCard.id).contains(event.target)) { //if clicked OUTSIDE of card
                 stopShowcase();
             }
         }
 
-        let timeout = setTimeout(() => { //wait out the transition time before attaching listener
+        let transitionTimer;
+        if (isFlippedPrev.current != isFlipped) { //card is flipping
+            transitionTimer = setTimeout(() => { //wait for transition to finish if card flipping (NEEDED TO PREVENT BUG WHEN SPAM CLICKING)
+                document.addEventListener("click", outsideClickListener);
+            }, 500);
+        }
+        else { //otherwise, card is not flipping so attach listener immediately
             document.addEventListener("click", outsideClickListener);
-        }, 500);
+        }
+
+        isFlippedPrev.current = isFlipped; //update the useRef
 
         return () => {
-            clearTimeout(timeout);
+            clearTimeout(transitionTimer);
             document.removeEventListener("click", outsideClickListener);
         }
-    }, [showcase, activeCard, setActiveCard, thisCard]);
+    }, [showcase, activeCard, setActiveCard, thisCard, isFlipped, isFlippedPrev]);
 
 
     return (
@@ -207,16 +217,17 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
                         <img src={thisCard.imageURL} alt="" style={{maxWidth: `${cardWidth}px`, maxHeight: `${cardHeight}px`}} />
                     </div>
 
-                    <div className="face back">
-                        <img src={cardBackURL} alt="" style={{maxWidth: `${cardWidth}px`, maxHeight: `${cardHeight}px`}} />
-                    </div>
-
-                    <div
+                    <div //glare effect only applies to front face
                         className="glare"
                         style={{
                             transform: isHovered ? `translate(${xy.x*120}px, ${xy.y*120}px) scale(${isHovered ? 1.1 : 1})`: "",
                         }}
                     />
+
+                    <div className="face back">
+                        <img src={cardBackURL} alt="" style={{maxWidth: `${cardWidth}px`, maxHeight: `${cardHeight}px`}} />
+
+                    </div>
 
                 </div>
 
