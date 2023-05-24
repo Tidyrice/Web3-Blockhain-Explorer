@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
+import { Typography } from "@mui/material";
 import "./Cards.css";
 
 const cardBackURL = "https://zoombies.world/card-gen/assets/zoombies_card_back.svg";
@@ -15,14 +16,17 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     const [thisCard, setThisCard] = useState(null);
     useEffect(() => {
         getCardFromAPI(cardURL)
-        .then((result) => { //result is in this format: https://zoombies.world/services/card_types/mb/37.json (parsed JSON)
+        .then((result) => { //result is in this format: https://zoombies.world/nft/moonbeam/1090 (parsed JSON)
             setThisCard({ //set card object
                 name: result.name,
                 imageURL: result.image,
                 description: result.description,
                 
                 id: result.attributes[0].value,
-                rarity: result.attributes[4].value,
+                rarity: result.attributes[6].value,
+                cost: result.attributes[10].value,
+                buy_zoom: result.attributes[11].value,
+                sacrifice_zoom: result.attributes[13].value,
             });
         })
         .catch((error) => {
@@ -55,8 +59,15 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         const { left, top, width, height } = target.getBoundingClientRect(); //left = left edge of viewport to left edge of card, top = top edge of viewport to top edge of card
 
         //mouse position within the card
-        const x = (clientX - left) / width; //ranges from 0 to 1
-        const y = (clientY - top) / height; //ranges from 0 to 1
+        let x, y;
+        if (!isFlipped) {
+            x = (clientX - left) / width; //ranges from 0 to 1
+            y = (clientY - top) / height; //ranges from 0 to 1
+        }
+        else {
+            x = 1 - ((clientX - left) / width); //x is inverted because card is mirrored when flipped
+            y = (clientY - top) / height;
+        }
         setXy({ x: x, y: y });
 
         //calculate rotation
@@ -89,14 +100,14 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         setActiveCard(thisCard); //let other cards know this card is being showcased
     }
 
-    function handleOnClick() {
+    function handleOnClick(event) {
         if (!showcase) { //start showcasing when card clicked
             startShowcase();
             setIsFlipped(false); //card is not flipped when initially showcased
             isFlippedPrev.current = false;
         }
         else { //flip the card when clicked again
-            setIsFlipped(!isFlipped);
+            setIsFlipped(!isFlipped); //isFlippedPrev is not updated until flipping transition is complete
         }
     }
 
@@ -167,7 +178,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         }
 
         let transitionTimer;
-        if (isFlippedPrev.current != isFlipped) { //card is flipping
+        if (isFlippedPrev.current !== isFlipped) { //card is flipping
             transitionTimer = setTimeout(() => { //wait for transition to finish if card flipping (NEEDED TO PREVENT BUG WHEN SPAM CLICKING)
                 document.addEventListener("click", outsideClickListener);
             }, 500);
@@ -225,8 +236,27 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
                     />
 
                     <div className="face back">
-                        <img src={cardBackURL} alt="" style={{maxWidth: `${cardWidth}px`, maxHeight: `${cardHeight}px`}} />
+                        <img src={cardBackURL} alt="" style={{ maxWidth: `${cardWidth}px`, maxHeight: `${cardHeight}px`}} />
 
+                        <div className="card-data">
+                            
+                            <Typography variant="h5">Token #{thisCard.id}</Typography>
+                            <br />
+                            <Typography variant="p">
+                                <span style={{ fontWeight: "bold" }}>GLMR Cost: </span>
+                                {thisCard.cost}
+                            </Typography>
+                            <br />
+                            <Typography variant="p">
+                                <span style={{ fontWeight: "bold" }}>Sacrifice earn ZOOM: </span>
+                                {thisCard.sacrifice_zoom}
+                            </Typography>
+
+                        </div>
+
+                        <div className="logo">
+                            <img src={"https://zoombies.world/images/moonbeam_label.svg"} alt="" style={{ maxWidth: `${cardWidth / 2.3}px`, maxHeight: `${cardHeight / 2.3}px`}}/>
+                        </div>
                     </div>
 
                 </div>
@@ -244,12 +274,12 @@ export default function Cards() {
     return (
         <div
             className="card-grid"
+            style={{ gridTemplateColumns: `repeat(auto-fill, ${cardWidth}`, gridTemplateRows: `repeat(auto-fill, ${cardHeight})`,}}
         >
 
             <Card cardURL={"https://zoombies.world/nft/moonbeam/100" /*common*/} activeCard={activeCard} setActiveCard={setActiveCard} />
             <Card cardURL={"https://zoombies.world/nft/moonbeam/1090" /*uncommon*/} activeCard={activeCard} setActiveCard={setActiveCard} />
             <Card cardURL={"https://zoombies.world/nft/moonbeam/6" /*rare*/} activeCard={activeCard} setActiveCard={setActiveCard} />
-            {/* <Card cardURL={card4} /> */}
             <Card cardURL={"https://zoombies.world/nft/moonbeam/79" /*platinum*/} activeCard={activeCard} setActiveCard={setActiveCard} />
 
         </div>
@@ -259,5 +289,5 @@ export default function Cards() {
 async function getCardFromAPI(URL) {
     const response = await fetch(URL);
     const data = await response.json();
-    return data; //return is in this format: https://zoombies.world/services/card_types/mb/37.json
+    return data; //return is in this format: https://zoombies.world/nft/moonbeam/1090
 }
