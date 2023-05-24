@@ -158,13 +158,19 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
             document.getElementById(thisCard.id).style.pointerEvents = "none"; //prevent interaction with this card during transition
         }
 
+        const outsideClickListener = (event) => {
+            if (!document.getElementById(thisCard.id).contains(event.target)) { //if clicked OUTSIDE of card
+                stopShowcase();
+            }
+        }
+
         let timeout = setTimeout(() => { //wait out the transition time before attaching listener
-            document.addEventListener("click", stopShowcase);
+            document.addEventListener("click", outsideClickListener);
         }, 500);
 
         return () => {
             clearTimeout(timeout);
-            document.removeEventListener("click", stopShowcase);
+            document.removeEventListener("click", outsideClickListener);
         }
     }, [showcase, activeCard, setActiveCard, thisCard]);
 
