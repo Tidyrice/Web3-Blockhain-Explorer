@@ -10,7 +10,13 @@ const cardHeight = 410; //max height of the card (px)
 const dampen = 0.020; //dampen the rotation (higher number = less rotation)
 const showcaseScale = 1.6; //scale of the showcased card
 
-function Card({cardURL, activeCard, setActiveCard}) { //individual card element
+function Card({cardURL, activeCard, setActiveCard}) { //individual card element (activeCard, setActiveCard is a useState hook from parent)
+
+    async function getCardFromAPI(URL) {
+        const response = await fetch(URL);
+        const data = await response.json();
+        return data; //return is in this format: https://zoombies.world/nft/moonbeam/1090
+    }
 
     //getting card from API call
     const [thisCard, setThisCard] = useState(null);
@@ -55,6 +61,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
     const [isHovered, setIsHovered] = useState(false); //card hovered?
 
     function handleMouseMove(event) {
+
         const { clientX, clientY, target } = event;
         const { left, top, width, height } = target.getBoundingClientRect(); //left = left edge of viewport to left edge of card, top = top edge of viewport to top edge of card
 
@@ -108,6 +115,9 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
         }
         else { //flip the card when clicked again
             setIsFlipped(!isFlipped); //isFlippedPrev is not updated until flipping transition is complete
+            
+            setRotation({ x: rotation.x, y: -rotation.y }); //invert rotation (card is mirrored when flipped)
+            document.getElementById(thisCard.id).style.transition = "transform 0.5s"; //smooth rotation mirroring when flipping (CLEARED by handleMouseEnter() after flip)
         }
     }
 
@@ -179,7 +189,7 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
         let transitionTimer;
         if (isFlippedPrev.current !== isFlipped) { //card is flipping
-            transitionTimer = setTimeout(() => { //wait for transition to finish if card flipping (NEEDED TO PREVENT BUG WHEN SPAM CLICKING)
+            transitionTimer = setTimeout(() => { //wait for transition to finish if card flipping (NEEDED TO PREVENT BUG WHEN SPAM CLICKING (outside click randomly detected))
                 document.addEventListener("click", outsideClickListener);
             }, 500);
         }
@@ -240,14 +250,14 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element
 
                         <div className="card-data">
                             
-                            <Typography variant="h5">Token #{thisCard.id}</Typography>
-                            <br />
-                            <Typography variant="p">
+                            <Typography variant="h5" sx={{marginTop: "11%"}}>Token #{thisCard.id}</Typography>
+
+                            <Typography variant="p" sx={{marginTop: "11%"}}>
                                 <span style={{ fontWeight: "bold" }}>GLMR Cost: </span>
                                 {thisCard.cost}
                             </Typography>
-                            <br />
-                            <Typography variant="p">
+
+                            <Typography variant="p" sx={{marginTop: "11%"}}>
                                 <span style={{ fontWeight: "bold" }}>Sacrifice earn ZOOM: </span>
                                 {thisCard.sacrifice_zoom}
                             </Typography>
@@ -284,10 +294,4 @@ export default function Cards() {
 
         </div>
     )
-}
-
-async function getCardFromAPI(URL) {
-    const response = await fetch(URL);
-    const data = await response.json();
-    return data; //return is in this format: https://zoombies.world/nft/moonbeam/1090
 }
