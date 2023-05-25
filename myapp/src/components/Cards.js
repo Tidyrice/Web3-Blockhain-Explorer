@@ -117,7 +117,10 @@ function Card({cardURL, activeCard, setActiveCard}) { //individual card element 
             setIsFlipped(!isFlipped); //isFlippedPrev is not updated until flipping transition is complete
             
             setRotation({ x: rotation.x, y: -rotation.y }); //invert rotation (card is mirrored when flipped)
-            document.getElementById(thisCard.id).style.transition = "transform 0.5s"; //smooth rotation mirroring when flipping (CLEARED by handleMouseEnter() after flip)
+            document.getElementById(thisCard.id).style.transition = "transform 0.5s"; //smooth rotation mirroring when flipping
+            setTimeout(() => { //revert transition time to default (responsive rotation) after flipping
+                document.getElementById(thisCard.id).style.transition = "";
+            }, 500);
         }
     }
 
